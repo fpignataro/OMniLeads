@@ -294,6 +294,8 @@ class Grupo(models.Model):
         'Acceso a las calificaciones como agente'))
     acceso_campanas_preview_agente = models.BooleanField(default=True, verbose_name=_(
         'Acceso a las campañas preview como agente'))
+    whatsapp_habilitado = models.BooleanField(default=False, verbose_name=_(
+        'Permiso de uso de la canalidad WhatsApp'))
     conjunto_de_pausa = models.ForeignKey(
         ConjuntoDePausa,
         related_name='grupos',
