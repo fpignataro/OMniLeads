@@ -2,7 +2,7 @@
 
 ########################################################################
 # Stage build python pip requirements and utils
-FROM python:3.9.2-alpine as dev
+FROM python:3.9-alpine as dev
 
 ENV INSTALL_PREFIX /opt/omnileads
 
@@ -39,7 +39,7 @@ RUN npm run build
 
 ########################################################################
 # Build omlapp image with binaries
-FROM python:3.9.2-alpine as run
+FROM python:3.9-alpine as run
 
 ENV INSTALL_PREFIX /opt/omnileads
 
