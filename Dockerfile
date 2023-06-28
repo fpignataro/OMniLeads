@@ -9,7 +9,7 @@ ENV INSTALL_PREFIX /opt/omnileads
 RUN apk add --virtual .buildeps \
       build-base \
       libffi-dev \
-      postgresql-dev \
+      postgresql14-dev \
       git \
       zlib-dev \
       jpeg-dev \
@@ -61,7 +61,7 @@ RUN apk add bash \
         libxslt \
         sox \
         tzdata \
-        postgresql-client \
+        postgresql14-client \
         pcre pcre-dev \
         aws-cli \
         git \
