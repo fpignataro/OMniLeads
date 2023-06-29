@@ -60,6 +60,15 @@ fi
 cat /tmp/${BACKUP_FILENAME} | psql
 }
 
+DB_Backup(){
+pg_dump -h ${PGHOST} -p ${PGPORT} -U ${PGUSER} -Fc -b -v -f /tmp/${BACKUP_FILENAME} -d ${PGDATABASE}
+if [ -z ${SSL_SELFSIGNED} ]; then  
+  aws --endpoint ${S3_ENDPOINT} s3 mv /tmp/${BACKUP_FILENAME} s3://${S3_BUCKET_NAME}/backup/
+else
+  aws --endpoint ${S3_ENDPOINT} s3 --no-verify-ssl mv /tmp/${BACKUP_FILENAME} s3://${S3_BUCKET_NAME}/backup/
+fi
+}
+
 if [ "$1" = "" ]; then
   if [ ! -f /etc/localtime ]; then
     ln -s /usr/share/zoneinfo/$TZ /etc/localtime
@@ -76,6 +85,11 @@ if [ "$1" = "" ]; then
 
   if [[ $POSTGRES_RESTORE == "True" ]]; then
     DB_Restore
+    exit 0
+  fi
+
+  if [[ $POSTGRES_BACKUP == "True" ]]; then
+    DB_Backup
     exit 0
   fi
 
