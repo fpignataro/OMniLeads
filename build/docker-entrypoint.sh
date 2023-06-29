@@ -52,12 +52,12 @@ Init_ASGI() {
 }
 
 DB_Restore(){
-  if [ -z ${bucket_ssl_selfsigned} ]; then
-    aws --endpoint ${S3_ENDPOINT} s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} ./
-  else [[ "${RESTORE_DB}" == "true" ]]; then
-    podman exec -it oml-django-server aws --endpoint ${S3_ENDPOINT} --no-verify-ssl s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/
-  cat /tmp/${BACKUP_FILENAME} | psql
-  fi
+if [ -z ${SSL_SELFSIGNED} ]; then
+  aws --endpoint ${S3_ENDPOINT} s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp
+else
+  aws --endpoint ${S3_ENDPOINT} --no-verify-ssl s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/  
+fi
+cat /tmp/${BACKUP_FILENAME} | psql
 }
 
 if [ "$1" = "" ]; then
