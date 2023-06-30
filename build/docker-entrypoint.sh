@@ -57,7 +57,7 @@ if [ -z ${SSL_SELFSIGNED} ]; then
 else
   aws --endpoint ${S3_ENDPOINT} --no-verify-ssl s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/  
 fi
-cat /tmp/${BACKUP_FILENAME} | psql
+pg_restore -d ${PGDATABASE} /tmp/${BACKUP_FILENAME}
 }
 
 DB_Backup(){
