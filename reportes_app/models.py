@@ -564,3 +564,11 @@ class TransferenciaAEncuestaLog(models.Model):
     campana_id = models.IntegerField(db_index=True, blank=True, null=True)
     encuesta_id = models.IntegerField(db_index=True, blank=True, null=True)
     callid = models.CharField(db_index=True, max_length=32, blank=True, null=True)
+
+
+class CallCustomVarLog(models.Model):
+    """
+    Registro de Variable Custom para una llamada
+    """
+    callid = models.CharField(db_index=True, max_length=32, blank=False, null=False)
+    valor = models.CharField(max_length=128, blank=False, null=False)
