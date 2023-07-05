@@ -52,7 +52,12 @@ Init_ASGI() {
 }
 
 DB_Restore(){
-if [ -z ${SSL_SELFSIGNED} ]; then
+if [ -z ${SSL_SELFSIGNED} ]; then  
+  if [ -z ${S3_ENDPOINT_AWS} ]; then
+    aws --endpoint ${S3_ENDPOINT} s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/
+  else 
+    aws s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/
+  fi  
   aws --endpoint ${S3_ENDPOINT} s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp
 else
   aws --endpoint ${S3_ENDPOINT} --no-verify-ssl s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/  
