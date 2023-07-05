@@ -58,19 +58,18 @@ if [ -z ${SSL_SELFSIGNED} ]; then
   else 
     aws s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/
   fi  
-  aws --endpoint ${S3_ENDPOINT} s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp
 else
-  aws --endpoint ${S3_ENDPOINT} --no-verify-ssl s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/  
+  aws --endpoint ${S3_ENDPOINT} --no-verify-ssl s3 cp s3://${S3_BUCKET_NAME}/backup/${BACKUP_FILENAME} /tmp/    
 fi
 pg_restore -d ${PGDATABASE} /tmp/${BACKUP_FILENAME}
 }
 
 DB_Backup(){
 pg_dump -h ${PGHOST} -p ${PGPORT} -U ${PGUSER} -Fc -b -v -f /tmp/${BACKUP_FILENAME} -d ${PGDATABASE}
-if [ -z ${SSL_SELFSIGNED} ]; then  
+if [ -z ${SSL_SELFSIGNED} ]; then
   if [ -z ${S3_ENDPOINT_AWS} ]; then
     aws --endpoint ${S3_ENDPOINT} s3 mv /tmp/${BACKUP_FILENAME} s3://${S3_BUCKET_NAME}/backup/
-  else 
+  else
     aws s3 mv /tmp/${BACKUP_FILENAME} s3://${S3_BUCKET_NAME}/backup/
   fi  
 else    
