@@ -114,7 +114,7 @@ if [ "$1" = "" ]; then
     $COMMAND compress --force
     #$COMMAND actualizar_configuracion
 
-    psql -U $PGUSER -h $PGHOST -d $PGDATABASE -c "\i ${INSTALL_PREFIX}/ominicontacto/reportes_app/sql/plperl/replace_insert_queue_log_ominicontacto_queue_log.sql"
+    #psql -U $PGUSER -h $PGHOST -d $PGDATABASE -c "\i ${INSTALL_PREFIX}/ominicontacto/reportes_app/sql/plperl/replace_insert_queue_log_ominicontacto_queue_log.sql"
     $COMMAND regenerar_asterisk
     $COMMAND actualizar_permisos
     $COMMAND adicionar_perfil_supervisor_admin
