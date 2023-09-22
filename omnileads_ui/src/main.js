@@ -56,6 +56,7 @@ import Listbox from 'primevue/listbox';
 import SplitButton from 'primevue/splitbutton';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import Panel from 'primevue/panel';
 import Tag from 'primevue/tag';
 
 // Idiomas
@@ -114,6 +115,7 @@ app.component('Listbox', Listbox);
 app.component('SplitButton', SplitButton);
 app.component('TabView', TabView);
 app.component('TabPanel', TabPanel);
+app.component('Panel', Panel);
 app.component('Tag', Tag);
 
 // Register Helpers
