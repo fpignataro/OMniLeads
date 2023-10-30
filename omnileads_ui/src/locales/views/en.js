@@ -204,7 +204,9 @@ export default {
         },
         conversations: {
             answered: 'Answered',
-            new: 'New'
+            new: 'New',
+            expired_conversation: 'Expired conversation',
+            restart_conversation: 'Restart conversation'
         },
         contact: {
             new: 'Create contact',
