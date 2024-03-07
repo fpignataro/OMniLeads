@@ -66,6 +66,7 @@ const cookies = new Cookies();
 const locale = cookies.get('django_language');
 const i18n = createI18n({
     locale,
+    allowComposition: true,
     fallbackLocale: 'en',
     messages
 });
