@@ -182,3 +182,38 @@ EMAIL_SSL_CERTFILE = os.getenv("EMAIL_SSL_CERTFILE", None)
 EMAIL_SSL_KEYFILE = os.getenv("EMAIL_SSL_KEYFILE", None)
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False) == "True"
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", False) == "True"
+
+TRUTHY_VALS = ("1", "true", "yes", "on") # FALSY = ("0", "false", "no", "off")
+
+CALLREC_DEVICE = os.getenv("CALLREC_DEVICE")
+
+if CALLREC_DEVICE in ("s3-aws", "s3-no-check-cert"):
+    DEFAULT_FILE_STORAGE = "storages.backends.s3.S3Storage"
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+    AWS_S3_URL_PROTOCOL = os.getenv("AWS_S3_URL_PROTOCOL", "https:")
+    AWS_S3_FILE_OVERWRITE = os.getenv("AWS_S3_FILE_OVERWRITE", "no") in TRUTHY_VALS
+    AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+    AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
+    if CALLREC_DEVICE == "s3-no-check-cert":
+        AWS_S3_VERIFY = False
+    else:
+        AWS_S3_VERIFY = True
+elif CALLREC_DEVICE == "s3-minio":
+    DEFAULT_FILE_STORAGE = "minio_storage.storage.MinioMediaStorage"
+    MINIO_STORAGE_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
+    MINIO_STORAGE_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    S3_ENDPOINT_MINIO = os.getenv("S3_ENDPOINT_MINIO")
+    if S3_ENDPOINT_MINIO.startswith("https://"):
+        MINIO_STORAGE_ENDPOINT = S3_ENDPOINT_MINIO.removeprefix("https://")
+        MINIO_STORAGE_USE_HTTPS = True
+    else:
+        MINIO_STORAGE_ENDPOINT = S3_ENDPOINT_MINIO.removeprefix("http://")
+        MINIO_STORAGE_USE_HTTPS = False
+    MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
+    MINIO_STORAGE_MEDIA_BUCKET_NAME = os.getenv("MINIO_STORAGE_MEDIA_BUCKET_NAME")
+    MINIO_STORAGE_MEDIA_URL = os.getenv("MINIO_STORAGE_MEDIA_URL")
+    MINIO_STORAGE_MEDIA_USE_PRESIGNED = os.getenv("MINIO_STORAGE_MEDIA_USE_PRESIGNED", "yes") in TRUTHY_VALS
+else:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"

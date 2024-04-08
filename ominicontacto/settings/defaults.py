@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'constance.backends.database',
     'django_sass',
     'django_sendfile',
+    'minio_storage',
     'easyaudit'
 ]
 
