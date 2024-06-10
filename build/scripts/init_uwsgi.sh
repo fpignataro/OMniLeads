@@ -13,6 +13,8 @@ if [[ $UWSGI_CUSTOM == "True" ]]; then
 cat >> ${INSTALL_PREFIX}/run/oml_uwsgi.ini << EOF
 processes=${UWSGI_PROCESSES}
 threads=${UWSGI_THREADS}
+listen=${UWSGI_LISTEN_QUEUE_SIZE}
+worker-reload-mercy=${UWSGI_WORKER_RELOAD_MERCY}
 max-worker-lifetime=7200
 reload-on-rss=1024
 reload-on-as=2048
