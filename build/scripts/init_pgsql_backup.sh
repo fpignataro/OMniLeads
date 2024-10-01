@@ -17,6 +17,9 @@ case ${CALLREC_DEVICE} in
   s3-no-check-cert)
     aws --endpoint ${S3_ENDPOINT} s3 --no-verify-ssl mv /tmp/${BACKUP_FILENAME} s3://${S3_BUCKET_NAME}/backup/
   ;;
+  backup-central-bucket)
+  	aws --endpoint ${S3_ENDPOINT} s3 mv /tmp/${BACKUP_FILENAME} s3://${S3_BUCKET_NAME}/${TENANT}/
+  ;;               
   *)
   	aws --endpoint ${S3_ENDPOINT} s3 mv /tmp/${BACKUP_FILENAME} s3://${S3_BUCKET_NAME}/backup/
   ;;               
