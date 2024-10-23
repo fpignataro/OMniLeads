@@ -32,7 +32,7 @@ from ominicontacto_app.tests.factories import (GrupoFactory, AgenteProfileFactor
                                                FieldFormularioFactory, BaseDatosContactoFactory,
                                                ContactoFactory, CampanaFactory,
                                                NombreCalificacionFactory, PausaFactory,
-                                               OpcionCalificacionFactory)
+                                               OpcionCalificacionFactory, ActuacionVigenteFactory)
 from configuracion_telefonia_app.tests.factories import (RutaSalienteFactory, TroncalSIPFactory,
                                                          PatronDeDiscadoFactory,
                                                          RutaEntranteFactory,
@@ -148,6 +148,8 @@ class Command(BaseCommand):
         )
 
         self._crear_opciones_calificacion(campana)
+        ActuacionVigenteFactory(campana=campana, domingo=True, sabado=True,
+                                hora_desde='00:00', hora_hasta='23:59:59')
 
         return campana
 
