@@ -39,37 +39,43 @@ class QueueMemberServiceTests(OMLBaseTest):
         self.agente3 = self.crear_agente_profile()
 
     @patch('ominicontacto_app.services.queue_member_service.obtener_sip_agentes_sesiones_activas')
+    @patch('redis.Redis.keys')
     @patch('redis.Redis.delete')
     @patch('ominicontacto_app.services.queue_member_service.QueueMemberService.activar_cola')
     @patch('ominicontacto_app.services.asterisk.asterisk_ami.AmiManagerClient.connect')
     def test_eliminar_agente_de_colas_asignadas(
-            self, connect, activar_cola, delete,
+            self, connect, activar_cola, delete, keys,
             obtener_sip_agentes_sesiones_activas):
+        keys.return_value = []
         service = QueueMemberService()
         self.assertEqual(self.agente1.queue_set.count(), 2)
         service.eliminar_agente_de_colas_asignadas(self.agente1)
         connect.assert_called()
         activar_cola.assert_called()
         obtener_sip_agentes_sesiones_activas.assert_called()
+        keys.assert_called_with('OML:CAMPAIGN-AGENTS:*')
         delete.assert_called_with('OML:AGENT-CAMPAIGNS:' + str(self.agente1.id))
         self.assertEqual(self.agente1.queue_set.count(), 0)
 
     @patch('ominicontacto_app.services.queue_member_service.QueueMemberService'
            '._remover_agente_cola_asterisk')
     @patch('ominicontacto_app.services.queue_member_service.obtener_sip_agentes_sesiones_activas')
+    @patch('redis.Redis.keys')
     @patch('redis.Redis.delete')
     @patch('ominicontacto_app.services.queue_member_service.QueueMemberService.activar_cola')
     @patch('ominicontacto_app.services.asterisk.asterisk_ami.AmiManagerClient.connect')
     def test_eliminar_agente_conectado_de_colas_asignadas(
-            self, connect, activar_cola, delete,
+            self, connect, activar_cola, delete, keys,
             obtener_sip_agentes_sesiones_activas, _remover_agente_cola_asterisk):
         obtener_sip_agentes_sesiones_activas.return_value = [self.agente1.sip_extension, ]
+        keys.return_value = []
         service = QueueMemberService()
         self.assertEqual(self.agente1.queue_set.count(), 2)
         service.eliminar_agente_de_colas_asignadas(self.agente1)
         connect.assert_called()
         activar_cola.assert_called()
         obtener_sip_agentes_sesiones_activas.assert_called()
+        keys.assert_called_with('OML:CAMPAIGN-AGENTS:*')
         delete.assert_called_with('OML:AGENT-CAMPAIGNS:' + str(self.agente1.id))
         self.assertEqual(self.agente1.queue_set.count(), 0)
         _remover_agente_cola_asterisk.assert_has_calls([call(self.campana1, self.agente1),
@@ -164,5 +170,9 @@ class QueueMemberServiceTests(OMLBaseTest):
         self.agente3.campana_member.get(id_campana=id_campana1, penalty=0)
         self.agente3.campana_member.get(id_campana=id_campana2, penalty=0)
         # Se agregan a la lista de campañas del agente en Redis
-        sadd.assert_called_with('OML:AGENT-CAMPAIGNS:' + str(self.agente3.id),
-                                *[self.campana1.id, self.campana2.id])
+        sadd.assert_has_calls([
+            call('OML:AGENT-CAMPAIGNS:' + str(self.agente3.id),
+                 *[self.campana1.id, self.campana2.id]),
+            call('OML:CAMPAIGN-AGENTS:' + str(self.campana1.id), self.agente3.id),
+            call('OML:CAMPAIGN-AGENTS:' + str(self.campana2.id), self.agente3.id)],
+            any_order=True)
