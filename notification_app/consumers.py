@@ -111,4 +111,4 @@ class RedisConsumer(AsyncWebsocketConsumer):
         async for message in self.pubsub.listen():
             if message["type"] == "message":
                 data = message["data"].decode("utf-8")
-                await self.send(text_data=json.dumps({"message": data}))
+                await self.send(text_data=data)
