@@ -18,7 +18,6 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer, AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 import redis.asyncio as redis_async
-import json
 import asyncio
 
 from django.conf import settings

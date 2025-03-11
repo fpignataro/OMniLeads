@@ -148,7 +148,7 @@ CHANNEL_LAYERS = {
     'redis_pubsub': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('redis', 6379)],  # Adjust if Redis runs elsewhere
+            'hosts': [('redis', 6379)],
         },
     },
 }
