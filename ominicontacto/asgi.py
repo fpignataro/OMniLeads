@@ -16,7 +16,6 @@
 #
 import os
 import django
-import notification_app.routing
 
 from channels.routing import ProtocolTypeRouter
 from channels.routing import ChannelNameRouter
@@ -31,6 +30,13 @@ django_asgi_app = get_asgi_application()
 
 from ominicontacto_app.bgtasks import BackgroundTasksConsumerClient  # noqa: E402
 from ominicontacto_app.bgtasks import BackgroundTasksConsumerWorker  # noqa: E402
+
+# Initialize Django ASGI application early to ensure the AppRegistry
+# is populated before importing code that may import ORM models.
+from django.core.asgi import get_asgi_application
+django_asgi_app = get_asgi_application()
+
+import notification_app.routing  # noqa: E402
 
 if not os.getenv('WALLBOARD_VERSION', '') == '':
     import wallboard_app.routing
