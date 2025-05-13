@@ -35,6 +35,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, MultiField
 from django.contrib.auth.models import Group
+from ominicontacto_app.services.dialer import wombat_habilitado
 
 from constance import config
 
@@ -1289,7 +1290,10 @@ class FormularioCRMForm(forms.Form):
 
 class SincronizaDialerForm(forms.Form):
     evitar_duplicados = forms.BooleanField(required=False)
-    evitar_sin_telefono = forms.BooleanField(required=False)
+    if wombat_habilitado():
+        evitar_sin_telefono = forms.BooleanField(required=False)
+    else:
+        evitar_sin_telefono = forms.BooleanField(required=False, initial=True)
     prefijo_discador = forms.CharField(required=False, widget=forms.TextInput(
         attrs={'class': 'class-fecha form-control'}))
 
