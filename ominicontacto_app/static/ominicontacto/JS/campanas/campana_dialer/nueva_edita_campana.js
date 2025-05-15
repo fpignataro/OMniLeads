@@ -31,7 +31,10 @@ $(function() {
 
 $(function(){
     interaccionUrl();
-    if ($('#errorsBDContacto').find('li').length == 2) {
-        // pop up
+    var $errorsBDContacto = $('#errorsBDContacto').find('li');
+    if ($errorsBDContacto.length == 2 && $($errorsBDContacto[1]).text() == 'opcion_abortar_true') {
+        // limpiar errores
+        $('#errorsBDContacto').remove();
+        $('#id_0-opcion_abortar').val('on');
     }
 });

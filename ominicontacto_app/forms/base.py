@@ -1708,7 +1708,7 @@ class CampanaDialerForm(CampanaMixinForm, forms.ModelForm):
 
     def clean_bd_contacto(self):
         bd_contacto = self.cleaned_data['bd_contacto']
-        opcion_abortar = self.cleaned_data.get('opcion_abortar', False)
+        opcion_abortar = self.data.get('0-opcion_abortar')
         instance = getattr(self, 'instance', None)
         es_template = self.initial.get('es_template', False)
         # Si uno desea modificar una campaña dialer, con instance no se permitira cambiar la BD
@@ -1716,7 +1716,7 @@ class CampanaDialerForm(CampanaMixinForm, forms.ModelForm):
             return instance.bd_contacto
         if not es_template and not bd_contacto.contactos.exists():
             raise forms.ValidationError(_('No puede seleccionar una BD vacia'))
-        if not opcion_abortar and \
+        if opcion_abortar == 'False' and \
            bd_contacto.contactos.filter(Q(telefono__isnull=True) |
                                         Q(telefono__exact='')).exists():
             raise forms.ValidationError([_('La BD tiene contactos sin teléfono'),
