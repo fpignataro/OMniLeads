@@ -30,5 +30,8 @@ $(function() {
 });
 
 $(function(){
-            interaccionUrl();
-        });
+    interaccionUrl();
+    if ($('#errorsBDContacto').find('li').length == 2) {
+        // pop up
+    }
+});

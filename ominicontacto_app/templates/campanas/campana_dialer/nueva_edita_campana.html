@@ -93,7 +93,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
             <div class="col-md-5">
                 <label for="{{ form.bd_contacto.id_for_label }}">{% trans 'Base de Datos de Contactos:' %}</label>
                 {{ form.bd_contacto }}
-                {{ form.bd_contacto.errors }}
+                <div id="errorsBDContacto">{{ form.bd_contacto.errors }}</div>
             </div>
             <div class="col-md-4">
                 <label for="{{ form.control_de_duplicados.id_for_label }}">{% trans 'Control de contactos duplicados:' %}</label>
@@ -187,4 +187,26 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
             </div>
         </div>
     {% endwith %}
+    <div class="modal fade" id="myMapModal">
+        <div class="modal-dialog" id="modal_ventana">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 id="address" class="modal-title"></h1>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div id="map-canvas" class=""></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans 'Cerrar' %}</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 {% endblock %}
