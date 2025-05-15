@@ -216,17 +216,18 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
+                    <h5 class="modal-title">{% trans 'Advertencia: contactos sin teléfono' %}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Modal body text goes here.</p>
+                    <p>{% trans 'Se ha detectado que la base seleccionada tiene contactos sin teléfono.' %}</p>
+                    <p>{% trans 'Puede continuar, cargando solo los contactos con teléfono o cerrar y escoger otra base.' %}</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="continueAbortModal" type="button" class="btn btn-primary">{% trans 'Continuar' %}</button>
+                    <button id="stopAbortModal" type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Cerrar' %}</button>
                 </div>
             </div>
         </div>
