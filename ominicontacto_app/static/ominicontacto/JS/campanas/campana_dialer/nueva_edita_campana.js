@@ -36,5 +36,7 @@ $(function(){
         // limpiar errores
         $('#errorsBDContacto').remove();
         $('#id_0-opcion_abortar').val('on');
+        console.log("here");
+        $('#modalAbort').modal('show');
     }
 });
