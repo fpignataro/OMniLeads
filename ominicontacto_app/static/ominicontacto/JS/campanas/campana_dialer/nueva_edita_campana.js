@@ -37,4 +37,8 @@ $(function(){
         $('#id_0-opcion_abortar').val('on');
         $('#modalAbort').modal('show');
     }
+    $('#stopAbortModal').on('click', function(event) {
+        console.log('here!');
+        $('#id_0-opcion_abortar').val('False');
+    });
 });
