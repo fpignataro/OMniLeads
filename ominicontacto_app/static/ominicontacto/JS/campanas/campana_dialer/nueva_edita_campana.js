@@ -38,7 +38,9 @@ $(function(){
         $('#modalAbort').modal('show');
     }
     $('#stopAbortModal').on('click', function(event) {
-        console.log('here!');
         $('#id_0-opcion_abortar').val('False');
+    });
+    $('#continueAbortModal').on('click', function(event) {
+        $('#wizardForm').submit();
     });
 });
