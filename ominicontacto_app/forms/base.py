@@ -1716,7 +1716,7 @@ class CampanaDialerForm(CampanaMixinForm, forms.ModelForm):
             return instance.bd_contacto
         if not es_template and not bd_contacto.contactos.exists():
             raise forms.ValidationError(_('No puede seleccionar una BD vacia'))
-        if opcion_abortar == 'False' and \
+        if not wombat_habilitado() and opcion_abortar == 'False' and \
            bd_contacto.contactos.filter(Q(telefono__isnull=True) |
                                         Q(telefono__exact='')).exists():
             raise forms.ValidationError([_('La BD tiene contactos sin teléfono'),
