@@ -37,10 +37,10 @@ $(function(){
         $('#id_0-opcion_abortar').val('on');
         $('#modalAbort').modal('show');
     }
-    $('#stopAbortModal').on('click', function(event) {
-        $('#id_0-opcion_abortar').val('False');
-    });
     $('#continueAbortModal').on('click', function(event) {
         $('#wizardForm').submit();
+    });
+    $('#modalAbort').on('hidden.bs.modal', function (e) {
+        $('#id_0-opcion_abortar').val('False');
     });
 });
