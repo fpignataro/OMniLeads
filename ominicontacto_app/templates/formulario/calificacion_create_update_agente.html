@@ -74,7 +74,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
             </div>
         {% endif %}
         <div class="row">
-            <div class="col-md-6">
+          <div class="col-md-8">
                 {{ contacto_form.non_field_errors }}
                 {% for hidden_field in contacto_form.hidden_fields %}
                   {{ hidden_field.errors }}
@@ -85,26 +85,46 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                 {% else %}
                     {{ contacto_form.confirmar_duplicado.label_tag }}{{ contacto_form.confirmar_duplicado }}
                 {% endif %}
+
+<div class="row">
                 {% for field in contacto_form %}
                     {% if field.name != "confirmar_duplicado" %}
+
+		{% if field.name == 'DEUDA_TOTAL' or field.name == 'MONTO_PROMESA_PAGO' or field.name == 'AGREEMENTS_2' %}
+		<div class="col-md-4" style="margin-top:3px;"></div>
+                </div>
+                <div class="row">
+		<div class="col-md-12">
+		<hr/>
+		</div>		
+		{% endif %}
+		{% with 'DEMANDADO TIPO_PRODUCTO OBSERVACION' as names %}
+		{% if field.name in names.split %}
+                <div class="col-md-8" style="margin-top:3px;">
+		{% else %}
+		<div class="col-md-4" style="margin-top:3px;">
+		{% endif %}
+		{% endwith %}
                         <tr>
                             <th>{{ field.label_tag}}</th>
                             <th>{{ field.errors }}</th>
                             <td> {{ field }}
-                            {% if contacto and field.name in campos_telefono %}
+                            {% if contacto and field.name in campos_telefono and field.value %}
                                     <a class="btn btn-submit btn-outline-primary" href="javascript:;" onclick="makeClick2Call('{{ campana.id }}', '{{ campana.type }}', '{{ contacto.id }}', '{{ field.value }}', 'agendas');" name="click2call">{{ field.value }}</a>
                             {% endif %}
                             </td>
                         </tr>
+    </div>
                     {% endif %}
                 {% endfor %}
+</div>
                 <br>
                 <button type="submit" id="id_guardar" class="btn btn-primary">
                     {% trans 'Guardar'  %}
                 </button>
             </div>
-            <div class="col-md-6">
-                <div {% if llamada_entrante %}class="hidden"{% endif %} data="toHide">
+            <div class="col-md-4">
+                <div id="div_calif" {% if llamada_entrante %}class="hidden"{% endif %} data="toHide">
                     {{calificacion_form.as_table}}
                 </div>
                     {% with auditoria=calificacion_form.instance.obtener_auditoria %}
@@ -131,7 +151,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                     {% endwith %}
                 {% if campana.speech %}
                     <div>
-                      <p><label>{% trans "Speech:" %}</label><textarea class="form-control" rows="10" cols="40" readonly>{{ campana.speech }}</textarea></p>
+                      <p><label>{% trans "Speech:" %}</label><textarea class="form-control" rows="38" cols="40" readonly>{{ campana.speech }}</textarea></p>
                     </div>
                 {% endif %}
                 {% if campana.campo_direccion %}    
@@ -162,4 +182,230 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
     async
     ></script>
 {% endif %}
+<!-- AQUI EMPIEZA LA MAGIA -->
+<script>
+//"Contacto con Tercero",
+//"Tercero No Toma Recado", 
+  var contacto = {
+    // Listado de las calificaciones positivas
+    "lista_positivo": [
+      "Agenda",
+      "Promesa de Pago",
+      "Compromiso Renegociacion",
+      "Compromiso Repactacion",
+      "Compromiso de Gestion",
+      "Ya pago",
+      "Contacto con Deudor sin compromiso",
+      "Gestión Comercial Titular con Compromiso",
+      "Gestión Comercial Titular sin Compromiso",
+      "Gestión Comercial Ya Pagó",
+      "Pago No Posteado",
+	  "Devolución llamado a solicitud Cliente",
+	  "Renegociación cursada WEB/APP"
+    ],
+    // Obtengo la lista de calificadores y la devuelvo en option pero en string
+    "options": function(value) {
+      var options = '';
+      $("#id_opcion_calificacion option").each(function() {
+        var selected = '';
+        if($(this).val() === value){
+          selected = 'selected';
+        }
+        options += '<option value="' + $(this).val() + '" ' + selected + '>' + $(this).text() + '</option>';
+      });
+      return options;
+    },
+    // Remplaso el input por un select
+    "remplaceInput": function(name, required = '') {
+      required = (required) ?  'required' : '';
+
+      selectValue = $("#id_" + name).val();
+      var select = '<select id="id_' + name + '" name="' + name + '" class="form-control" ' + required + '>%s</select>'.replace('%s', this.options(selectValue));
+      $("#id_" + name).replaceWith(select);
+      $("#id_" + name).parent();
+      return $("#id_" + name);
+    },
+    // Comprobar si el select seleccionado es una calificacon positiva
+    "comprobarSelectCalificacion": function(select) {
+      var option = select.find('option:selected');
+
+      for (i = 0; i < this.lista_positivo.length; i++) {
+        if(this.lista_positivo[i] == option.text()){
+          return true;
+        }
+      }
+      return false;
+    },
+    // formateando la vista
+    "formatView": function() {
+      var label = $("label[for='id_opcion_calificacion']").text('Calificación TELEFONO:');
+      $("label[for='id_contacto_form-CALIFICACION_TELEFONO_2']").text('Calificación TELEFONO2:');
+      $("label[for='id_contacto_form-CALIFICACION_TELEFONO_3']").text('Calificación TELEFONO3:');
+      $("label[for='id_contacto_form-CALIFICACION_TELEFONO_4']").text('Calificación TELEFONO4:');
+
+      var calificacion = $('#id_opcion_calificacion').addClass('form-control');
+      var div = $('<div class="col-md-4" style="margin-top:3px"></div>')
+      div.append(label).append(calificacion);
+      $('#id_contacto_form-telefono').parent().after(div);
+
+      // Mueve de lugar
+      e = $('#id_contacto_form-CALIFICACION_TELEFONO_2').parent();
+      e.prev().insertAfter(e);
+      e.prev().insertAfter(e);
+
+      // Mueve de lugar
+      e = $('#id_contacto_form-CALIFICACION_TELEFONO_3').parent();
+      e.prev().insertAfter(e);
+
+      div = $('#div_calif').parent().hide().prev();
+      div.removeClass('col-md-8').addClass('col-md-12');
+      div.find('.col-md-4').removeClass('col-md-4').addClass('col-md-3');
+      div.find('.col-md-8').removeClass('col-md-8').addClass('col-md-9');
+    },
+    // Accion del select
+    "onChangeSelect": function() {
+      sessionSelect = sessionStorage.getItem('calificaciones')? JSON.parse(sessionStorage.getItem('calificaciones')) : {};
+      $('select').change(function() {
+        var telefono = $(this).parent().prev().find('input').val();
+        var option = $(this).find('option:selected');
+        var key = $(this).attr('id') + '_' + telefono;
+        var id_opcion_calificacion = $('#id_opcion_calificacion');
+
+        // if(option.text() === 'Agenda'){
+        //   if($(this).attr('id') == id_opcion_calificacion.attr('id'))
+
+        //   if(id_opcion_calificacion.attr('id') != $(this).attr('id')){
+        //     id_opcion_calificacion.val($(this).val());
+        //     id_opcion_calificacion.parent().prevAll().find('a').hide();
+        //     id_opcion_calificacion.parent().next().nextAll().find('a').hide();
+        //   }
+        // }else{
+        //     id_opcion_calificacion.parent().prevAll().find('a:hidden').show();
+        //     id_opcion_calificacion.parent().next().nextAll().find('a:hidden').show();
+        // }
+        if(option.text() === 'Agenda'){
+          $(this).parent().prev().prevAll().find('a').hide();
+          $(this).parent().nextAll().find('a').hide();
+        } else {
+          $(this).parent().prev().prevAll().find('a:hidden').show();
+          $(this).parent().nextAll().find('a:hidden').show();
+        }
+
+        // Guardando calificacion en la session del navegador
+        sessionSelect[key] = option.val();
+        sessionStorage.setItem('calificaciones', JSON.stringify(sessionSelect));
+
+        // Compruebo que sea positivo
+        if(contacto.comprobarSelectCalificacion($(this))) {
+          $(this).parent().prevAll().find('select').prop('required', false).attr("style", "pointer-events: none; background-color: #e9ecef");
+          $(this).parent().nextAll().find('select').prop('required', false).attr("style", "pointer-events: none; background-color: #e9ecef");
+          return;
+        }
+
+        // Select anteriores
+        var select = $(this).parent().prevAll('div').find('select');
+        for(i=0; i <= select.length; i++){
+          var inputPrev = $(select[i]).parent().prev().find('input');
+          $(select[i]).prop('readonly', false).removeAttr('style').prop('required', (inputPrev.val()));
+        }
+
+        // Select siguientes
+        var select = $(this).parent().nextAll('div').find('select');
+        for(i=0; i <= select.length; i++){
+          var inputPrev = $(select[i]).parent().prev().find('input');
+          if(inputPrev.val()){
+            $(select[i]).prop('readonly', false).removeAttr('style').prop('required', (inputPrev.val()));
+          }
+        }
+
+        return;
+      })
+    },
+    // Actualizando los select
+    "refresh": function(){
+      var sessionSelect = sessionStorage.getItem('calificaciones')? JSON.parse(sessionStorage.getItem('calificaciones')) : {};
+
+      var select = [
+        'id_opcion_calificacion',
+        'id_contacto_form-CALIFICACION_TELEFONO_2',
+        'id_contacto_form-CALIFICACION_TELEFONO_3',
+        'id_contacto_form-CALIFICACION_TELEFONO_4'
+      ];
+      
+
+      for(var i = 0; i <= select.length; i++) {
+        var telefono = $('#' + select[i]).parent().prev().find('input').val();
+        var key = select[i] + '_' + telefono;
+        var id = sessionSelect[key];
+        if(id != undefined){
+          $("#" + select[i]).val(id).change();
+        }
+      }
+    },
+    "submit": function() {
+      $('#form-calificacion').submit(function(e){
+        // e.preventDefault(); 
+
+        var option = $('select').find('option:selected');
+        for(var i = 0; i <= option.length; i++) {
+            if(option[i] && option[i].text === 'Agenda'){
+              // Principal
+              var id_contacto_form_telefono = $('#id_contacto_form-telefono');
+              var id_contacto_form_calificacion = $('#id_opcion_calificacion');
+              var telefono_principal = id_contacto_form_telefono.val();
+              var calificacion_principal = id_contacto_form_calificacion.val();
+
+              // Select
+              var selectOrigin = $(option[i]).parent();
+              var inputOrigin = selectOrigin.parent().prev().find('input');
+              var telefono_agendado = inputOrigin.val();
+              var calificacion_agendado = selectOrigin.val();
+
+              if(id_contacto_form_calificacion.attr('id') != selectOrigin.attr('id')){
+                id_contacto_form_telefono.val(telefono_agendado);
+                id_contacto_form_calificacion.val(calificacion_agendado);
+
+                selectOrigin.val(calificacion_principal);
+                inputOrigin.val(telefono_principal);
+              }
+            }
+        }
+
+        sessionStorage.removeItem('calificaciones');
+      });
+    },
+    // script inicial
+    "init": function() {
+      $('form').find('input').prop('readonly', true);
+
+      // El telefono principal siempre es requerido
+      $('#id_opcion_calificacion').prop('required', true);
+      
+      // Telefono principal
+      var telf = $('#id_contacto_form-telefono').attr('readonly', true);
+      $('#id_contacto_form-MONTO_PROMESA_PAGO').attr('readonly', false);
+      $('#id_contacto_form-OBSERVACION').attr('readonly', false);
+      // Telefono secundarios
+      for(i = 2; i <= 4; i++) {
+        var telf = $('#id_contacto_form-TELEFONO' + i);
+        telf.attr('readonly', true);
+        contacto.remplaceInput('contacto_form-CALIFICACION_TELEFONO_' + i, false).prop('required', telf.val() ? true : false);
+        if(!telf.val()) {
+          $('#id_contacto_form-CALIFICACION_TELEFONO_' + i)
+          .attr("style", "pointer-events: none; background-color: #e9ecef")
+          .prop('required', false)
+          .prop('readonly', true)
+          .val('');
+        }
+      }
+
+      this.onChangeSelect();
+      this.formatView();
+      this.refresh();
+      this.submit();
+    }
+  };
+  contacto.init();
+</script>
+
 {% endblock content %}
