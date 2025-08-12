@@ -553,6 +553,10 @@ class SessionData {
         return this.is_transfered && this.transfer_type == CONSULTATIVE_TRANSFER;
     }
 
+    get is_campaign_transfer () {
+        return this.is_transfered && this.transfer_type == CAMPAIGN_TRANSFER;
+    }
+
     get transfer_type_str () {
         switch (this.transfer_type) {
         case DIRECT_TRANSFER:
