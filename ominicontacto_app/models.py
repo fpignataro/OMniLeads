@@ -1329,6 +1329,7 @@ class Campana(models.Model):
         default=PERMITIR_DUPLICADOS,
     )
     whatsapp_habilitado = models.BooleanField(default=False)
+    permitir_calificar_telefonos = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nombre
