@@ -36,10 +36,12 @@ from django.views.generic import FormView, CreateView, DetailView, TemplateView
 from simple_history.utils import update_change_reason
 
 from ominicontacto_app.forms.base import (CalificacionClienteForm, FormularioNuevoContacto,
-                                          RespuestaFormularioGestionForm, )
+                                          RespuestaFormularioGestionForm,
+                                          CalificacionTelefonoFormset)
 from ominicontacto_app.models import (
     Contacto, Campana, CalificacionCliente, RespuestaFormularioGestion,
-    OpcionCalificacion, SitioExterno, AgendaContacto, ReglaIncidenciaPorCalificacion)
+    OpcionCalificacion, SitioExterno, AgendaContacto, ReglaIncidenciaPorCalificacion,
+    CalificacionTelefono)
 from ominicontacto_app.services.sistema_externo.interaccion_sistema_externo import (
     InteraccionConSistemaExterno)
 from ominicontacto_app.services.campana_service import CampanaService
@@ -327,6 +329,31 @@ class CalificacionClienteFormView(FormView):
         bd_metadata = self.campana.bd_contacto.get_metadata()
         campos_telefono = bd_metadata.nombres_de_columnas_de_telefonos + ['telefono']
 
+        opciones_calificacion_campana = [
+            (opcion, opcion) for opcion in self.campana.opciones_calificacion.values_list(
+                'nombre', flat=True)
+        ]
+
+        calificaciones_telefonos_formset = None
+        if self.campana.permitir_calificar_telefonos:
+            calificaciones_telefonos_qs = CalificacionTelefono.objects.filter(
+                campana=self.campana, contacto=self.contacto)
+            if calificaciones_telefonos_qs.exists():
+                calificaciones_telefonos_formset = CalificacionTelefonoFormset(
+                    form_kwargs={
+                        'opciones': opciones_calificacion_campana,
+                    },
+                    queryset=calificaciones_telefonos_qs
+                )
+            else:
+                initial_data = [{} for __ in range(len(campos_telefono))]
+                calificaciones_telefonos_formset = CalificacionTelefonoFormset(
+                    form_kwargs={
+                        'opciones': opciones_calificacion_campana,
+                    },
+                    initial=initial_data
+                )
+
         force_disposition = False
         extra_client_data = {}
         if self.call_data:
@@ -372,6 +399,7 @@ class CalificacionClienteFormView(FormView):
             campos_telefono=campos_telefono,
             contacto_form=contacto_form,
             calificacion_form=calificacion_form,
+            calificaciones_telefonos_formset=calificaciones_telefonos_formset,
             campana=self.campana,
             llamada_entrante=formulario_llamada_entrante,
             call_data=self.call_data,

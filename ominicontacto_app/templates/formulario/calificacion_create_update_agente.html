@@ -104,6 +104,17 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                 </button>
             </div>
             <div class="col-md-6">
+                {% if campana.permitir_calificar_telefonos %}
+                    <div class="dow">
+                        {{ calificaciones_telefonos_formset.management_form }}
+
+                        {% for form in calificaciones_telefonos_formset %}
+                            <div class="formset-form">
+                                {{ form.as_p }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <div {% if llamada_entrante %}class="hidden"{% endif %} data="toHide">
                     {{calificacion_form.as_table}}
                 </div>
@@ -134,7 +145,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                       <p><label>{% trans "Speech:" %}</label><textarea class="form-control" rows="10" cols="40" readonly>{{ campana.speech }}</textarea></p>
                     </div>
                 {% endif %}
-                {% if campana.campo_direccion %}    
+                {% if campana.campo_direccion %}
                     <div class="mapouter">
                         <div class="gmap_canvas" id="map"></div>
                         <div id="infowindow-content">
@@ -154,7 +165,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
     <input type="hidden" id="field_address" name="{{campana.campo_direccion}}" value="{{GOOGLE_MAPS_CENTER}}">
 </div>
 </div>
-{% if campana.campo_direccion %}    
+{% if campana.campo_direccion %}
     <script src="{% static 'ominicontacto/JS/agente/googlemap.js' %}">
     </script>
     <script
