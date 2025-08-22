@@ -37,8 +37,10 @@ from simple_history.utils import update_change_reason
 
 from ominicontacto_app.forms.base import (CalificacionClienteForm, FormularioNuevoContacto,
                                           RespuestaFormularioGestionForm,
-                                          CalificacionTelefonoFormset,
-                                          CalificacionTelefonoModelFormset, EMPTY_CHOICE)
+                                          CalificacionTelefonoForm,
+                                          CalificacionTelefonoModelFormSetInit,
+                                          EMPTY_CHOICE)
+from django.forms.models import modelformset_factory
 from ominicontacto_app.models import (
     Contacto, Campana, CalificacionCliente, RespuestaFormularioGestion,
     OpcionCalificacion, SitioExterno, AgendaContacto, ReglaIncidenciaPorCalificacion,
@@ -339,8 +341,13 @@ class CalificacionClienteFormView(FormView):
         if self.campana.permitir_calificar_telefonos:
             calificaciones_telefonos_qs = CalificacionTelefono.objects.filter(
                 campana=self.campana, contacto=self.contacto)
+            CalificacionTelefonoModelFormSet = modelformset_factory(
+                CalificacionTelefono,
+                form=CalificacionTelefonoForm,
+                extra=len(campos_telefono),
+            )
             if calificaciones_telefonos_qs.exists():
-                calificaciones_telefonos_formset = CalificacionTelefonoModelFormset(
+                calificaciones_telefonos_formset = CalificacionTelefonoModelFormSet(
                     form_kwargs={
                         'opciones': opciones_calificacion_campana,
                     },
@@ -349,11 +356,12 @@ class CalificacionClienteFormView(FormView):
             else:
                 initial_data = [{'calificacion': EMPTY_CHOICE[1]}
                                 for __ in range(len(campos_telefono))]
-                calificaciones_telefonos_formset = CalificacionTelefonoFormset(
+                calificaciones_telefonos_formset = CalificacionTelefonoModelFormSet(
                     form_kwargs={
                         'opciones': opciones_calificacion_campana,
                     },
-                    initial=initial_data
+                    initial=initial_data,
+                    queryset=CalificacionTelefono.objects.none(),
                 )
         force_disposition = False
         extra_client_data = {}
@@ -414,6 +422,9 @@ class CalificacionClienteFormView(FormView):
         contacto_form = self.get_contacto_form()
         calificacion_form = self.get_form()
         contacto_form_valid = contacto_form.is_valid()
+        calificaciones_telefonos_formset = CalificacionTelefonoModelFormSetInit(
+            request.POST,
+            queryset=CalificacionTelefono.objects.none())
         calificacion_form_valid = calificacion_form.is_valid()
         self.usuario_califica = request.POST.get('usuario_califica', 'false') == 'true'
         formulario_llamada_entrante = self._formulario_llamada_entrante()

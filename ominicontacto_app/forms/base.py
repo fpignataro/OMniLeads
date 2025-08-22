@@ -2540,14 +2540,9 @@ class CalificacionTelefonoForm(forms.ModelForm):
             self.fields['calificacion'].widget.choices = opciones_default
 
 
-CalificacionTelefonoModelFormset = modelformset_factory(
+CalificacionTelefonoModelFormSetInit = modelformset_factory(
     CalificacionTelefono,
     form=CalificacionTelefonoForm,
     fields=['calificacion'],
-    extra=0
-)
-
-CalificacionTelefonoFormset = formset_factory(
-    form=CalificacionTelefonoForm,
     extra=0
 )
