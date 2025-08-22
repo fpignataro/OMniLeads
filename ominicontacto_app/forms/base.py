@@ -967,7 +967,8 @@ class CampanaEntranteForm(CampanaMixinForm, forms.ModelForm):
         fields = ('nombre', 'bd_contacto', 'campo_direccion', 'sistema_externo', 'id_externo',
                   'tipo_interaccion', 'sitio_externo', 'objetivo', 'mostrar_nombre',
                   'mostrar_did', 'mostrar_nombre_ruta_entrante', 'outcid', 'outr',
-                  'videocall_habilitada', 'whatsapp_habilitado', 'speech', 'control_de_duplicados')
+                  'videocall_habilitada', 'whatsapp_habilitado', 'speech', 'control_de_duplicados',
+                  'permitir_calificar_telefonos')
         labels = {
             'bd_contacto': 'Base de Datos de Contactos',
         }
@@ -984,7 +985,8 @@ class CampanaEntranteForm(CampanaMixinForm, forms.ModelForm):
             'tipo_interaccion': forms.RadioSelect(),
             'outcid': forms.TextInput(attrs={'class': 'form-control'}),
             'outr': forms.Select(attrs={'class': 'form-control'}),
-            'speech': forms.Textarea(attrs={'class': 'form-control'})
+            'speech': forms.Textarea(attrs={'class': 'form-control'}),
+            'permitir_calificar_telefonos': forms.CheckboxInput(attrs={'class': 'form-control'})
         }
 
 
@@ -1734,7 +1736,8 @@ class CampanaDialerForm(CampanaMixinForm, forms.ModelForm):
         fields = ('nombre', 'fecha_inicio', 'fecha_fin', 'control_de_duplicados',
                   'bd_contacto', 'campo_direccion', 'sistema_externo', 'id_externo',
                   'tipo_interaccion', 'sitio_externo', 'objetivo', 'mostrar_nombre',
-                  'outcid', 'outr', 'speech', 'prioridad', 'whatsapp_habilitado')
+                  'outcid', 'outr', 'speech', 'prioridad', 'whatsapp_habilitado',
+                  'permitir_calificar_telefonos')
         labels = {
             'bd_contacto': 'Base de Datos de Contactos',
         }
@@ -1756,6 +1759,7 @@ class CampanaDialerForm(CampanaMixinForm, forms.ModelForm):
             'outr': forms.Select(attrs={'class': 'form-control'}),
             'speech': forms.Textarea(attrs={'class': 'form-control'}),
             'prioridad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'permitir_calificar_telefonos': forms.CheckboxInput(attrs={'class': 'form-control'})
         }
 
 
@@ -2081,7 +2085,8 @@ class CampanaManualForm(CampanaMixinForm, forms.ModelForm):
         model = Campana
         fields = ('nombre', 'bd_contacto', 'control_de_duplicados', 'campo_direccion',
                   'sistema_externo', 'id_externo', 'tipo_interaccion', 'sitio_externo',
-                  'objetivo', 'outcid', 'outr', 'speech', 'whatsapp_habilitado')
+                  'objetivo', 'outcid', 'outr', 'speech', 'whatsapp_habilitado',
+                  'permitir_calificar_telefonos')
 
         widgets = {
             'sistema_externo': forms.Select(attrs={'class': 'form-control'}),
@@ -2093,7 +2098,8 @@ class CampanaManualForm(CampanaMixinForm, forms.ModelForm):
             'control_de_duplicados': forms.Select(attrs={'class': 'form-control'}),
             'outcid': forms.TextInput(attrs={'class': 'form-control'}),
             'outr': forms.Select(attrs={'class': 'form-control'}),
-            'speech': forms.Textarea(attrs={'class': 'form-control'})
+            'speech': forms.Textarea(attrs={'class': 'form-control'}),
+            'permitir_calificar_telefonos': forms.CheckboxInput(attrs={'class': 'form-control'})
         }
 
     def requiere_bd_contacto(self):
@@ -2111,6 +2117,7 @@ class CampanaPreviewForm(CampanaMixinForm, forms.ModelForm):
         super(CampanaPreviewForm, self).__init__(*args, **kwargs)
         self.fields['outr'].queryset = RutaSaliente.objects.all()
         instance = getattr(self, 'instance', None)
+        self.fields['permitir_calificar_telefonos'].initial = True
         if instance and instance.pk and not self.initial.get('es_template', False):
             self.fields['nombre'].disabled = True
             self.fields['bd_contacto'].disabled = True
@@ -2122,7 +2129,7 @@ class CampanaPreviewForm(CampanaMixinForm, forms.ModelForm):
         fields = ('nombre', 'sistema_externo', 'id_externo', 'control_de_duplicados',
                   'tipo_interaccion', 'sitio_externo', 'objetivo', 'bd_contacto',
                   'campo_direccion', 'tiempo_desconexion', 'outr', 'outcid', 'speech',
-                  'whatsapp_habilitado')
+                  'whatsapp_habilitado', 'permitir_calificar_telefonos')
 
         widgets = {
             'bd_contacto': forms.Select(attrs={'class': 'form-control', 'id': 'camp_bd_contactos'}),
@@ -2136,7 +2143,8 @@ class CampanaPreviewForm(CampanaMixinForm, forms.ModelForm):
             'tiempo_desconexion': forms.NumberInput(attrs={'class': 'form-control'}),
             'outcid': forms.TextInput(attrs={'class': 'form-control'}),
             'outr': forms.Select(attrs={'class': 'form-control'}),
-            'speech': forms.Textarea(attrs={'class': 'form-control'})
+            'speech': forms.Textarea(attrs={'class': 'form-control'}),
+            'permitir_calificar_telefonos': forms.CheckboxInput(attrs={'class': 'form-control'})
         }
 
     def requiere_bd_contacto(self):
