@@ -37,7 +37,8 @@ from simple_history.utils import update_change_reason
 
 from ominicontacto_app.forms.base import (CalificacionClienteForm, FormularioNuevoContacto,
                                           RespuestaFormularioGestionForm,
-                                          CalificacionTelefonoFormset)
+                                          CalificacionTelefonoFormset,
+                                          CalificacionTelefonoModelFormset, EMPTY_CHOICE)
 from ominicontacto_app.models import (
     Contacto, Campana, CalificacionCliente, RespuestaFormularioGestion,
     OpcionCalificacion, SitioExterno, AgendaContacto, ReglaIncidenciaPorCalificacion,
@@ -339,21 +340,21 @@ class CalificacionClienteFormView(FormView):
             calificaciones_telefonos_qs = CalificacionTelefono.objects.filter(
                 campana=self.campana, contacto=self.contacto)
             if calificaciones_telefonos_qs.exists():
-                calificaciones_telefonos_formset = CalificacionTelefonoFormset(
+                calificaciones_telefonos_formset = CalificacionTelefonoModelFormset(
                     form_kwargs={
                         'opciones': opciones_calificacion_campana,
                     },
                     queryset=calificaciones_telefonos_qs
                 )
             else:
-                initial_data = [{} for __ in range(len(campos_telefono))]
+                initial_data = [{'calificacion': EMPTY_CHOICE[1]}
+                                for __ in range(len(campos_telefono))]
                 calificaciones_telefonos_formset = CalificacionTelefonoFormset(
                     form_kwargs={
                         'opciones': opciones_calificacion_campana,
                     },
                     initial=initial_data
                 )
-
         force_disposition = False
         extra_client_data = {}
         if self.call_data:

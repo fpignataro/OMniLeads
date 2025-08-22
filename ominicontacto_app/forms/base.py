@@ -23,8 +23,8 @@ from django import forms
 from django.conf import settings
 
 from django.core.validators import URLValidator
-from django.forms.models import (inlineformset_factory, modelformset_factory, BaseInlineFormSet,
-                                 ModelChoiceField)
+from django.forms.models import (inlineformset_factory, modelformset_factory, formset_factory,
+                                 BaseInlineFormSet, ModelChoiceField)
 from django.contrib.auth.forms import (
     UserChangeForm,
     UserCreationForm
@@ -2535,13 +2535,19 @@ class CalificacionTelefonoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if opciones_personalizadas:
-            self.fields['calificacion'].choices = opciones_default + opciones_personalizadas
+            self.fields['calificacion'].widget.choices = opciones_default + opciones_personalizadas
         else:
-            self.fields['calificacion'].choices = opciones_default
+            self.fields['calificacion'].widget.choices = opciones_default
 
 
-CalificacionTelefonoFormset = modelformset_factory(
+CalificacionTelefonoModelFormset = modelformset_factory(
     CalificacionTelefono,
     form=CalificacionTelefonoForm,
     fields=['calificacion'],
+    extra=0
+)
+
+CalificacionTelefonoFormset = formset_factory(
+    form=CalificacionTelefonoForm,
+    extra=0
 )

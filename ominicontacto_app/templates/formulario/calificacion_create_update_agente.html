@@ -106,13 +106,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
             <div class="col-md-6">
                 {% if campana.permitir_calificar_telefonos %}
                     <div class="dow">
-                        {{ calificaciones_telefonos_formset.management_form }}
-
                         {% for form in calificaciones_telefonos_formset %}
-                            <div class="formset-form">
-                                {{ form.as_p }}
+                            <div class="col-md-9">
+                                <label for="{{ form.calificacion.id_for_label }}">{% trans 'Calificacion teléfono' %}</label>
+                                {{ form.calificacion }}
+                                {{ form.calificacion.errors }}
                             </div>
                         {% endfor %}
+                        {{ calificaciones_telefonos_formset.management_form }}
                     </div>
                 {% endif %}
                 <div {% if llamada_entrante %}class="hidden"{% endif %} data="toHide">
