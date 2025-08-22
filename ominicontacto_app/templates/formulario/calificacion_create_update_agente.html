@@ -108,7 +108,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                     <div class="dow">
                         {% for form in calificaciones_telefonos_formset %}
                             <div class="col-md-9">
-                                <div class="hidden">{{ form.id }</div>
+                                <div class="hidden">{{ form.id }}</div>
+                                <div class="hidden">{{ form.campana }}</div>
+                                <div class="hidden">{{ form.contacto }}</div>
+                                <div class="hidden">{{ form.agente }}</div>
+                                <div class="hidden">{{ form.campo_contacto }}</div>
                                 <label for="{{ form.calificacion.id_for_label }}">{% trans 'Calificacion teléfono' %}</label>
                                 {{ form.calificacion }}
                                 {{ form.calificacion.errors }}

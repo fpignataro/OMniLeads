@@ -2543,6 +2543,5 @@ class CalificacionTelefonoForm(forms.ModelForm):
 CalificacionTelefonoModelFormSetInit = modelformset_factory(
     CalificacionTelefono,
     form=CalificacionTelefonoForm,
-    fields=['calificacion'],
     extra=0
 )
