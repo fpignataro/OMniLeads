@@ -431,9 +431,11 @@ class CalificacionClienteFormView(FormView):
         contacto_form = self.get_contacto_form()
         calificacion_form = self.get_form()
         contacto_form_valid = contacto_form.is_valid()
+        calificaciones_telefonos_qs = CalificacionTelefono.objects.filter(
+            campana=self.campana, contacto=self.contacto)
         calificaciones_telefonos_formset = CalificacionTelefonoModelFormSetInit(
             request.POST,
-            queryset=CalificacionTelefono.objects.none())
+            queryset=calificaciones_telefonos_qs)
         calificaciones_telefonos_formset.save()
         calificacion_form_valid = calificacion_form.is_valid()
         self.usuario_califica = request.POST.get('usuario_califica', 'false') == 'true'
