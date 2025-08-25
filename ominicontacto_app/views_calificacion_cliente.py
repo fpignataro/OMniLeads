@@ -436,7 +436,7 @@ class CalificacionClienteFormView(FormView):
         calificaciones_telefonos_formset = CalificacionTelefonoModelFormSetInit(
             request.POST,
             queryset=calificaciones_telefonos_qs)
-        calificaciones_telefonos_formset.save()
+        calificaciones_telefonos_formset_valid = calificaciones_telefonos_formset.is_valid()
         calificacion_form_valid = calificacion_form.is_valid()
         self.usuario_califica = request.POST.get('usuario_califica', 'false') == 'true'
         formulario_llamada_entrante = self._formulario_llamada_entrante()
@@ -447,10 +447,13 @@ class CalificacionClienteFormView(FormView):
             return self.form_valid(contacto_form)
         if formulario_llamada_entrante and not self.usuario_califica and not contacto_form_valid:
             return self.form_invalid(contacto_form)
-        if contacto_form_valid and calificacion_form_valid:
-            return self.form_valid(contacto_form, calificacion_form)
+        if contacto_form_valid and calificacion_form_valid and \
+           calificaciones_telefonos_formset_valid:
+            return self.form_valid(
+                contacto_form, calificacion_form, calificaciones_telefonos_formset)
         else:
-            return self.form_invalid(contacto_form, calificacion_form)
+            return self.form_invalid(
+                contacto_form, calificacion_form, calificaciones_telefonos_formset)
 
     def _check_metadata_no_accion_delete(self, calificacion):
         """ En caso que sea una calificacion de no gestion elimina metadatacliente"""
@@ -569,7 +572,10 @@ class CalificacionClienteFormView(FormView):
                 repr(error) if error else None,
             )
 
-    def form_valid(self, contacto_form, calificacion_form=None):
+    def form_valid(
+            self, contacto_form, calificacion_form=None, calificaciones_telefonos_formset=None):
+        if calificaciones_telefonos_formset is not None:
+            calificaciones_telefonos_formset.save()
         # Elimino CRM DATA para que no moleste:
         if self.call_data and 'CRM_contact_data' in self.call_data:
             self.call_data.pop('CRM_contact_data')
@@ -642,9 +648,11 @@ class CalificacionClienteFormView(FormView):
             messages.error(self.request, e.message)
             return self.render_to_response(self.get_context_data(
                 contacto_form=contacto_form,
+                calificaciones_telefonos_formset=calificaciones_telefonos_formset,
                 calificacion_form=calificacion_form))
 
-    def form_invalid(self, contacto_form, calificacion_form=None):
+    def form_invalid(
+            self, contacto_form, calificacion_form=None, calificaciones_telefonos_formset=None):
         """
         Re-renders the context data with the data-filled forms and errors.
         """
@@ -660,6 +668,7 @@ class CalificacionClienteFormView(FormView):
             campos_telefono=campos_telefono,
             contacto_form=contacto_form,
             calificacion_form=calificacion_form,
+            calificaciones_telefonos_formset=calificaciones_telefonos_formset,
             campana=self.campana,
             call_data=self.call_data,
             configuracion_sitio_externo=json.dumps(self.configuracion_sitio_externo))
