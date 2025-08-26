@@ -23,7 +23,8 @@ from django import forms
 from django.conf import settings
 
 from django.core.validators import URLValidator
-from django.forms.models import inlineformset_factory, BaseInlineFormSet, ModelChoiceField
+from django.forms.models import (inlineformset_factory, modelformset_factory, formset_factory,
+                                 BaseInlineFormSet, ModelChoiceField)
 from django.contrib.auth.forms import (
     UserChangeForm,
     UserCreationForm
@@ -45,7 +46,7 @@ from ominicontacto_app.models import (
     SistemaExterno, ReglasIncidencia, ReglaIncidenciaPorCalificacion, SupervisorProfile,
     ArchivoDeAudio, NombreCalificacion, OpcionCalificacion, ParametrosCrm,
     AuditoriaCalificacion, ConfiguracionDeAgentesDeCampana, ListasRapidas, ContactoListaRapida,
-    AutenticacionExternaDeUsuario
+    AutenticacionExternaDeUsuario, CalificacionTelefono
 )
 from ominicontacto_app.services.campana_service import CampanaService
 from ominicontacto_app.utiles import (convertir_ascii_string, validar_nombres_campanas,
@@ -60,6 +61,7 @@ from ominicontacto_app.utiles import convert_fecha_datetime
 from reportes_app.models import LlamadaLog
 from ominicontacto_app.services.sistema_externo.interaccion_sistema_externo import (
     InteraccionConSistemaExterno)
+from reciclado_app.resultado_contactacion import EstadisticasContactacion
 
 TIEMPO_MINIMO_DESCONEXION = 2
 EMPTY_CHOICE = ('', '---------')
@@ -2513,3 +2515,33 @@ class CampanaConfiguracionWhatsappForm(forms.ModelForm):
             'grupo_plantilla_whatsapp': forms.Select(attrs={'class': 'form-control'}),
             'nivel_servicio': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+
+class CalificacionTelefonoForm(forms.ModelForm):
+
+    OPCIONES_CALIFICACION_TELEFONO = EstadisticasContactacion.TXT_ESTADO.values()
+
+    class Meta:
+        model = CalificacionTelefono
+        fields = ('contacto', 'campana', 'agente', 'calificacion', 'campo_contacto')
+        widgets = {
+            'calificacion': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        opciones_default = [EMPTY_CHOICE] + [(opcion, opcion)
+                                             for opcion in self.OPCIONES_CALIFICACION_TELEFONO]
+        opciones_personalizadas = kwargs.pop('opciones', None)
+        super().__init__(*args, **kwargs)
+
+        if opciones_personalizadas:
+            self.fields['calificacion'].widget.choices = opciones_default + opciones_personalizadas
+        else:
+            self.fields['calificacion'].widget.choices = opciones_default
+
+
+CalificacionTelefonoModelFormSetInit = modelformset_factory(
+    CalificacionTelefono,
+    form=CalificacionTelefonoForm,
+    extra=0
+)
