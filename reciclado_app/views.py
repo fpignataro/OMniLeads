@@ -29,7 +29,7 @@ from django.views.generic import FormView
 from ominicontacto_app.models import Campana
 from reciclado_app.forms import RecicladoForm
 from reciclado_app.resultado_contactacion import (
-    EstadisticasContactacion, RecicladorContactosCampanaDIALER)
+    EstadisticasContactacion, RecicladorContactosCampanaDIALER, RecicladorContactosCampanaPreview)
 from ominicontacto_app.services.campana_service import CampanaService
 
 import logging as logging_
@@ -51,11 +51,9 @@ class ReciclarCampanaMixin(object):
         contactados = estadisticas.obtener_cantidad_calificacion(campana)
         contactados_choice = [(contactacion.id, contactacion.label_checkbox)
                               for contactacion in contactados]
-        no_contactados = estadisticas.obtener_cantidad_no_contactados(campana)
-        no_contactados_choice = [(value.id, value.label_checkbox)
-                                 for key, value in no_contactados.items()]
         kwargs['reciclado_choice'] = contactados_choice
-        kwargs['no_contactados_choice'] = no_contactados_choice
+        kwargs['no_contactados_choice'] = self._obtener_choices_no_contactados(estadisticas,
+                                                                               campana)
         return kwargs
 
     def form_valid(self, form):
@@ -76,7 +74,7 @@ class ReciclarCampanaMixin(object):
             return self.form_invalid(form)
 
         campana = Campana.objects.get(pk=self.kwargs['pk_campana'])
-        reciclador = RecicladorContactosCampanaDIALER()
+        reciclador = self._obtener_reciclador()
         if campana.es_preview and retomar_contactacion:
             reciclador.retomar_contactacion(
                 campana, reciclado_calificacion, reciclado_no_contactacion)
@@ -115,13 +113,20 @@ class ReciclarCampanaMixin(object):
         contactados = estadisticas.obtener_cantidad_calificacion(campana)
         contactados_choice = [(contactacion.id, contactacion.nombre, contactacion.cantidad)
                               for contactacion in contactados]
-        no_contactados = estadisticas.obtener_cantidad_no_contactados(campana)
-        no_contactados_choice = [(value.id, value.nombre, value.cantidad)
-                                 for key, value in no_contactados.items()]
         context['contactados'] = contactados_choice
-        context['no_contactados'] = no_contactados_choice
+        no_contactados_con_cantidad = self._obtener_cantidad_no_contactados(estadisticas, campana)
+        context['no_contactados'] = no_contactados_con_cantidad
         context['es_campana_preview'] = campana.es_preview
         return context
+
+    def _obtener_choices_no_contactados(self, estadisticas: EstadisticasContactacion, campana):
+        raise NotImplementedError()
+
+    def _obtener_cantidad_no_contactados(self, estadisticas: EstadisticasContactacion, campana):
+        raise NotImplementedError()
+
+    def _obtener_reciclador(self):
+        raise NotImplementedError()
 
 
 class ReciclarCampanaDialerFormView(ReciclarCampanaMixin, FormView):
@@ -163,6 +168,18 @@ class ReciclarCampanaDialerFormView(ReciclarCampanaMixin, FormView):
         campana.save()
         return update_campana
 
+    def _obtener_choices_no_contactados(self, estadisticas: EstadisticasContactacion, campana):
+        no_contactados = estadisticas.obtener_cantidad_no_contactados(campana)
+        return [(value.id, value.label_checkbox)
+                for key, value in no_contactados.items()]
+
+    def _obtener_cantidad_no_contactados(self, estadisticas: EstadisticasContactacion, campana):
+        no_contactados = estadisticas.obtener_cantidad_no_contactados(campana)
+        return [(value.id, value.nombre, value.cantidad) for key, value in no_contactados.items()]
+
+    def _obtener_reciclador(self):
+        return RecicladorContactosCampanaDIALER()
+
 
 class ReciclarCampanaPreviewFormView(ReciclarCampanaMixin, FormView):
     """
@@ -181,3 +198,14 @@ class ReciclarCampanaPreviewFormView(ReciclarCampanaMixin, FormView):
         campana.save()
         campana.establecer_valores_iniciales_agente_contacto(False, False)
         return update_campana
+
+    def _obtener_choices_no_contactados(self, estadisticas: EstadisticasContactacion, campana):
+        no_calificados = estadisticas.obtener_cantidad_no_calificados(campana)
+        return [('0', _('No calificados') + ' ' + str(no_calificados)), ]
+
+    def _obtener_cantidad_no_contactados(self, estadisticas: EstadisticasContactacion, campana):
+        no_calificados = estadisticas.obtener_cantidad_no_calificados(campana)
+        return [('0', _('No calificados'), no_calificados), ]
+
+    def _obtener_reciclador(self):
+        return RecicladorContactosCampanaPreview()
