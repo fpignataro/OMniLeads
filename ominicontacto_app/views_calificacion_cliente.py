@@ -451,6 +451,11 @@ class CalificacionClienteFormView(FormView):
            calificaciones_telefonos_formset_valid:
             return self.form_valid(
                 contacto_form, calificacion_form, calificaciones_telefonos_formset)
+        if contacto_form_valid and calificacion_form_valid and \
+           not calificaciones_telefonos_formset_valid and \
+           calificaciones_telefonos_formset.forms == []:
+            return self.form_valid(
+                contacto_form, calificacion_form)
         else:
             return self.form_invalid(
                 contacto_form, calificacion_form, calificaciones_telefonos_formset)
