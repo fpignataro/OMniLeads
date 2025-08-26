@@ -91,10 +91,16 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
                             <th>{{ field.label_tag}}</th>
                             <th>{{ field.errors }}</th>
                             <td> {{ field }}
-                            {% if contacto and field.name in campos_telefono %}
-                                <a class="btn btn-submit btn-outline-primary" href="javascript:;" onclick="makeClick2Call('{{ campana.id }}', '{{ campana.type }}', '{{ contacto.id }}', '{{ field.value }}', 'agendas');" name="click2call">{{ field.value }}</a>
-                                <div id=contacto-{{field.name}}></div>
-                            {% endif %}
+                                {% if contacto and field.name in campos_telefono %}
+                                    <div class="row mt-1">
+                                        <div class="col-md-6">
+                                            <a class="btn btn-submit btn-outline-primary" href="javascript:;" onclick="makeClick2Call('{{ campana.id }}', '{{ campana.type }}', '{{ contacto.id }}', '{{ field.value }}', 'agendas');" name="click2call">{{ field.value }}</a>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div id=contacto-{{field.name}}></div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endif %}
