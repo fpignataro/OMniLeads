@@ -1,27 +1,18 @@
 # Release Notes
-250825.01
+pre.release.2.6
 
 ## Added
-- oml-2679 New Omnidialer service.
-- oml-2923 Order and filtering adding agents in Campaigns Wizard.
-- oml-2893 Massive download and deletion of agendas.
-- oml-2886 Allow contact database structure definition on campaign wizard.
-- oml-2921 Allow configuring Agents as IVR destinations.
+- oml-3032 Meta Whatsapp Provider
+- oml-2987 White Label for Enterprise version
+- oml-2976 
 
 ## Changed
 
-- oml-2750 Whatsapp Line Wizard allows selection of any inbound campaign.
-- oml-3040 The generation of the oml_pjsip_agents.conf file was optimized to search for PJSIP endpoints in Kamailio
-- oml-3035 Replacement of slowsql logger.
-- oml-3102 Ended campaigns added when filtering Agendas search.
-- oml-800  Command regenerar_asterisk no longer regenerates cron tasks.
+No changes this release
 
 ## Fixed
 
-- oml-2931 Fix "enmodoselect" Incidence rule.
-- oml-2997 Fix 'easyaudits' logs ip field.
-- oml-3079 Avoid unnecessary regeneration of all Campaigns data in redis.
-- oml-3117 Fix On Hold Timer stop condition.
+No fixes this release
 
 ## Removed
 
@@ -29,4 +20,4 @@ No removals in this release.
 
 ## Migrations
 
-ominicontacto_app: 0111
+whatsapp_app: 0015
